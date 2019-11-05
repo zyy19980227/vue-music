@@ -6,7 +6,8 @@ export const commonParams = {
   format: 'jsonp'
 }
 export const options = {
-  param: 'jsonpCallback'
+  param: 'jsonpCallback',
+  prefix: 'playlistinfoCallback'
 }
 
 export const ERR_OK = 0

@@ -6,7 +6,7 @@
     <h1 class="title" v-html="title"></h1>
     <div class="bg-image" :style="bgStyle" ref="bgimage">
       <div class="play-wrapper">
-        <div class="play" v-show="songs.length > 0" ref="playBtn">
+        <div class="play" v-show="songs.length > 0" ref="playBtn" @click="random">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
         </div>
@@ -16,7 +16,7 @@
     <div class="bg-layer" ref="layer"></div>
     <scroll :probe-type='probeType' :data='songs' :listen-scroll='listenScroll' class='list' ref="list" @scroll='scroll'>
       <div class="song-list-wrapper">
-        <song-list :songs='songs'></song-list>
+        <song-list :songs='songs' :rank='rank' @select='selectItem'></song-list>
       </div>
       <div class="loading-container" v-show="!songs.length">
         <loading></loading>
@@ -30,6 +30,8 @@ import Scroll from '../../base/scroll'
 import loading from '../../base/loading/loading'
 import SongList from '../../base/song-list/song-list'
 import { prefixStyle } from '../../common/js/dom'
+import { mapActions } from 'vuex'
+import { playlistMixin } from '../../common/js/mixin'
 const HEIGHT = 40
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
@@ -44,6 +46,7 @@ export default {
     SongList,
     loading
   },
+  mixins: [playlistMixin],
   props: {
     bgImage: {
       type: String,
@@ -58,6 +61,10 @@ export default {
     title: {
       type: String,
       default: ''
+    },
+    rank: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -66,7 +73,27 @@ export default {
     },
     scroll (pos) {
       this.scrollY = pos.y
-    }
+    },
+    selectItem (item, index) {
+      this.selectPlay({
+        list: this.songs,
+        index
+      })
+    },
+    random () {
+      this.randomPlay({
+        list: this.songs
+      })
+    },
+    handlePlaylist (playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+      this.$refs.list.$el.style.bottom = bottom
+      this.$refs.list.refresh()
+    },
+    ...mapActions([
+      'selectPlay',
+      'randomPlay'
+    ])
   },
   computed: {
     bgStyle () {

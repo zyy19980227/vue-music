@@ -12,6 +12,10 @@ const portfinder = require('portfinder')
 
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
+const express = require('express')
+var app = express()
+var apiRoutes = express.Router()
+const axios = require('axios')
 
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
@@ -64,7 +68,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         to: config.dev.assetsSubDirectory,
         ignore: ['.*']
       }
-    ])
+    ]),
   ]
 })
 
@@ -78,6 +82,7 @@ module.exports = new Promise((resolve, reject) => {
       process.env.PORT = port
       // add port to devServer config
       devWebpackConfig.devServer.port = port
+      devWebpackConfig.devServer.disableHostCheck = true
 
       // Add FriendlyErrorsPlugin
       devWebpackConfig.plugins.push(new FriendlyErrorsPlugin({
