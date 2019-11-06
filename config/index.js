@@ -31,6 +31,16 @@ module.exports = {
           '^/api/getSongList': ''
         }
       },
+      '/api/getSearchList': {
+        target: 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp',
+        bypass: function (req, res, proxyOptions) {
+          req.headers.referer = 'https://y.qq.com/m/index.html';
+          req.headers.host = 'c.y.qq.com';
+        },
+        pathRewrite: {
+          '^/api/getSearchList': ''
+        }
+      },
       '/apilyric': {
         target: 'http://localhost:8080',
         pathRewrite: {
