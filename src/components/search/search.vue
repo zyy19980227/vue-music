@@ -4,7 +4,7 @@
       <searchbox ref="searchbox" @query='onQueryChange'></searchbox>
     </div>
     <div class="shortcut-wrapper" v-show="!query" ref="shortcuntWrapper">
-      <scroll class="shortcut" :data='shortcut' ref="scroll">
+      <scroll class="shortcut" :data='shortcut' :refreshDelay='refreshDelay' ref="scroll">
         <div>
           <div class="hot-key">
             <h1 class="title">热门搜索</h1>
@@ -40,17 +40,17 @@ import searchlist from '../../base/search-list/search-list'
 import confirm from '../../base/confirm/confirm'
 import { getHotKey } from '../../api/search'
 import { ERR_OK } from '../../api/config'
-import { playlistMixin } from '../../common/js/mixin'
+import { playlistMixin, searchMixin } from '../../common/js/mixin'
 import suggest from '../../components/suggest/suggest'
 import Scroll from '../../base/scroll'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   data () {
     return {
       hotKey: [],
-      query: '',
       text: '是否清空所有搜索历史',
-      confirmBtnText: '清空'
+      confirmBtnText: '清空',
+      refreshDelay: 100
     }
   },
   components: {
@@ -60,11 +60,8 @@ export default {
     confirm,
     Scroll
   },
-  mixins: [playlistMixin],
+  mixins: [playlistMixin, searchMixin],
   computed: {
-    ...mapGetters([
-      'searchHistory'
-    ]),
     shortcut () {
       return this.hotKey.concat(this.searchHistory)
     }
@@ -82,20 +79,8 @@ export default {
     this._getHotKey()
   },
   methods: {
-    addQuery (query) {
-      this.$refs.searchbox.setQuery(query)
-    },
-    onQueryChange (query) {
-      this.query = query
-    },
     showConfirm () {
       this.$refs.confirm.show()
-    },
-    blurInput () {
-      this.$refs.searchbox.blur()
-    },
-    saveSearch () {
-      this.saveSearchHistory(this.query)
     },
     handlePlaylist (playlist) {
       const bottom = playlist.length > 0 ? '60px' : ''
@@ -112,8 +97,6 @@ export default {
       })
     },
     ...mapActions([
-      'saveSearchHistory',
-      'deleteSearchHistory',
       'clearSearchHistory'
     ])
   }
